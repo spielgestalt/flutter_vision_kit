@@ -38,16 +38,19 @@ class VisionKitController: NSObject, VNDocumentCameraViewControllerDelegate {
 
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
         var images:[UIImage] = []
-        for i in 0 ..< scan.pageCount {
+        for i in 0 ..< scan.pageCount {            
             images.append(scan.imageOfPage(at: i))
            }
+        visionController.dismiss(animated: true, completion: nil)
         self.completionHandler?(.success(VisionResult.success(images:images )))
     }
     func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+        visionController.dismiss(animated: true, completion: nil)
         self.completionHandler?(.success(.canceled))
+
     }
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
+        visionController.dismiss(animated: true, completion: nil)
         self.completionHandler?(.failure(error))
-
     }
 }
