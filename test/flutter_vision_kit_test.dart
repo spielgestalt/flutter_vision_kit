@@ -14,7 +14,7 @@ void main() {
           throw PlatformException(
               code: "no_simulator", message: 'Not Implemented on Simulator');
         }
-        return 'file://Document/test.jpg';
+        return ['file://Document/test.jpg'];
       }
       throw PlatformException(
           code: "not_implemented", message: 'Not Implemented on Simulator');
@@ -27,7 +27,8 @@ void main() {
 
   test('pickDocument', () async {
     runOnSimulator = false;
-    expect(await FlutterVisionKit().pickDocument(), 'file://Document/test.jpg');
+    expect(
+        await FlutterVisionKit().pickDocument(), ['file://Document/test.jpg']);
   });
   test('pickDocument on Simulator', () {
     runOnSimulator = true;
