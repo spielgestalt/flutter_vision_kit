@@ -26,7 +26,7 @@ public class SwiftFlutterVisionKitPlugin: NSObject, FlutterPlugin {
             case .success(let pickerResult):
                 switch pickerResult {
                 case .success(images: let images):
-                    result(self.saveImaged(images: images, result: result))
+                    self.saveImaged(images: images, result: result)
                 case .canceled:
                     result(nil)
                 }
@@ -36,22 +36,27 @@ public class SwiftFlutterVisionKitPlugin: NSObject, FlutterPlugin {
         }
         #endif
     }
-    private func saveImaged(images:[UIImage], result:  FlutterResult) -> [String] {
-        let tempDirUrl = NSURL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+    private func saveImaged(images:[UIImage], result: @escaping FlutterResult){
+        DispatchQueue.global(qos: .userInitiated).async {
+            let tempDirUrl = NSURL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
 
-        var imagePaths:[String] = []
-        for image in images {
-            let uuid = UUID().uuidString
-            if let data = image.pngData(), let tempFileURL = tempDirUrl.appendingPathComponent("vision_kit_\(uuid).png"){
-                do{
-                    try data.write(to: tempFileURL)
-                    imagePaths.append(tempFileURL.absoluteString)
-                }catch let error{
+            var imagePaths:[String] = []
+            for image in images {
+                let uuid = UUID().uuidString
+                if let data = image.pngData(), let tempFileURL = tempDirUrl.appendingPathComponent("vision_kit_\(uuid).png"){
+                    do{
+                        try data.write(to: tempFileURL)
+                        imagePaths.append(tempFileURL.absoluteString)
+                    }catch let error{
                         result(FlutterError(code: "create_file_error", message: error.localizedDescription, details: nil))
-                }
+                    }
 
+                }
             }
+            DispatchQueue.main.async {
+                result(imagePaths)
+            }
+            result(imagePaths)
         }
-        return imagePaths
     }
 }
